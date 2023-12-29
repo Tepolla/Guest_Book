@@ -14,7 +14,7 @@ const MyComponent = () => {
         screenOptions={{
           headerShown: false, // hides header
         }}>
-        <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="HomeScreen" component={HomeScreen} />
         <Stack.Screen name="AddGuestScreen" component={AddGuestScreen} />
         <Stack.Screen name="ViewGuestScreen" component={ViewGuestScreen} />
       </Stack.Navigator>

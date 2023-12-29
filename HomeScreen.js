@@ -47,11 +47,21 @@ const styles = StyleSheet.create({
       alignItems: 'center',
       marginTop: 10,
     },
+    // Title text properties
+    title: {
+    color: '#ADD8E6',
+      fontSize: 40,
+      textAlign: 'center',
+    },
     // Container for Button
     buttonContainer: {
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
+    },
+    // Button text properties
+    buttonText: {
+      fontSize: 25,
     },
     // Button properties
     button: {
@@ -62,16 +72,6 @@ const styles = StyleSheet.create({
       justifyContent: 'center',
       alignItems: 'center',
       margin: 30,
-    },
-    // Button text properties
-    buttonText: {
-      fontSize: 25,
-    },
-    // Title text properties
-    title: {
-    color: '#ADD8E6',
-      fontSize: 40,
-      textAlign: 'center',
     },
   });
 
