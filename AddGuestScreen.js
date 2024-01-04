@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { SafeAreaView, TouchableOpacity, View, Text, TextInput, StyleSheet, StatusBar } from 'react-native';
+import { SafeAreaView, TouchableOpacity, View, Text, TextInput, StyleSheet, StatusBar, Alert } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const AddGuestScreen = ({ navigation }) => {
 
@@ -7,30 +8,39 @@ const AddGuestScreen = ({ navigation }) => {
   const [nameEnter, setNameEnter] = useState("");
   const [ageEnter, setAgeEnter] = useState("");
 
-  // -------------------------------------------------- DEBUG -------------------------------------------------- //
-  // create another state variable to store the button title
-  // const [buttonTitle, setButtonTitle] = useState("Done");
-  // -------------------------------------------------- DEBUG -------------------------------------------------- //
-  
-  // update the state variables upon input values change
-  const storeName = setNameEnter;
-  const storeAge = setAgeEnter;
-
-  // Function that pushes user data to the local sql database 
-  const StoreGuestData = () => {
-    // check if any required input values are empty and pushes data if not as well as navigating to the home screen
+  // Function that saves user data to AsyncStorage and navigates to the home screen 
+  const storeGuestData = () => {
+    // check if any required input values are empty and saves data if not as well as navigating to the home screen
     if ( nameEnter !== "" && ageEnter !== "") {
-      // Push guest data to sql database
-      
-      // -------------------------------------------------- DEBUG -------------------------------------------------- //
-      // setButtonTitle(nameEnter + " : " + ageEnter); //XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX REPLACE WITH PUSHING DATA TO SQL DATABASE XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX//
-      // -------------------------------------------------- DEBUG -------------------------------------------------- //
+      // Save the data to AsyncStorage
+      saveData();
       
       //navigation.navigate('HomeScreen');
     }
   };
 
-
+  // Save name and age to AsyncStorage
+  const saveData = async () => {
+    try {
+      // Use Promise.all to wait for both setItem calls to finish
+      await Promise.all([
+        AsyncStorage.setItem('guestName', JSON.stringify(nameEnter)),
+        AsyncStorage.setItem('guestAge', JSON.stringify(ageEnter)),
+      ])
+        // Show a success alert, if both setItem calls succeed
+        .then(() => {
+          Alert.alert('Success', 'Data saved successfully');
+        }, 2000)
+        // Show a fail alert, if either setItem call fails
+        .catch((error) => {
+          Alert.alert('Failure', `Data could not be saved: ${error.message}`);
+        });
+    } catch (error) {
+      // Show a generic error alert, if something else goes wrong
+      Alert.alert('Error', 'Something went wrong!');
+    }
+  };
+  
 
   return (
     
@@ -54,12 +64,12 @@ const AddGuestScreen = ({ navigation }) => {
           <TextInput
             style={styles.inputStyle}
             placeholder="Please enter your name here."
-            onChangeText={storeName}
+            onChangeText={setNameEnter}
           />
           <TextInput
             style={styles.inputStyle}
             placeholder="Please enter your age here."
-            onChangeText={storeAge}
+            onChangeText={setAgeEnter}
           />
             
         </View>
@@ -81,18 +91,9 @@ const AddGuestScreen = ({ navigation }) => {
         {/* Done Button */}
         <TouchableOpacity
         style={styles.button}
-        onPress={StoreGuestData}
+        onPress={storeGuestData}
         >
-          {/*
-          // -------------------------------------------------- DEBUG -------------------------------------------------- //
-          <Text style={styles.buttonText}>{buttonTitle}</Text>
-          // -------------------------------------------------- DEBUG -------------------------------------------------- //
-          */}
-
           <Text style={styles.buttonText}>Done</Text>
-
-          
-
       </TouchableOpacity>
       
         
