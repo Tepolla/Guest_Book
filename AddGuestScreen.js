@@ -30,7 +30,7 @@ const AddGuestScreen = ({ navigation }) => {
         // Show a success alert, if both setItem calls succeed
         .then(() => {
           Alert.alert('Success', 'Data saved successfully');
-        }, 2000)
+        })
         // Show a fail alert, if either setItem call fails
         .catch((error) => {
           Alert.alert('Failure', `Data could not be saved: ${error.message}`);
