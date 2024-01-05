@@ -1,7 +1,14 @@
 // This page file is for the main page that users will see, the HomeScreen.
 
 import React from 'react';
-import { SafeAreaView, TouchableOpacity, View, Text, StyleSheet, StatusBar } from 'react-native';
+import { 
+  SafeAreaView, 
+  TouchableOpacity, 
+  View, 
+  Text, 
+  StyleSheet, 
+  StatusBar 
+} from 'react-native';
 
 const HomeScreen = ({ navigation }) => {
   return (

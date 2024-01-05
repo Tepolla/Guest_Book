@@ -1,107 +1,96 @@
-import React, { useState } from 'react';
-import { SafeAreaView, TouchableOpacity, View, Text, TextInput, StyleSheet, StatusBar, Alert } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import {
+  SafeAreaView,
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  StatusBar,
+} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const AddGuestScreen = ({ navigation }) => {
+  const [nameEnter, setNameEnter] = useState('');
+  const [ageEnter, setAgeEnter] = useState('');
+  const [guests, setGuests] = useState([]);
 
-  //Create state variables to store input data
-  const [nameEnter, setNameEnter] = useState("");
-  const [ageEnter, setAgeEnter] = useState("");
+  useEffect(() => {
+    // Load guest data from AsyncStorage when the component mounts
+    loadGuestData();
+  }, []);
 
-  // Function that saves user data to AsyncStorage and navigates to the home screen 
-  const storeGuestData = () => {
-    // check if any required input values are empty and saves data if not as well as navigating to the home screen
-    if ( nameEnter !== "" && ageEnter !== "") {
-      // Save the data to AsyncStorage
-      saveData();
-      
-      //navigation.navigate('HomeScreen');
+  const storeGuestData = async () => {
+    if (nameEnter.trim() === '' || ageEnter.trim() === '') {
+      alert('Please enter both name and age.');
+      return;
     }
+
+    const newGuest = {
+      name: nameEnter,
+      age: ageEnter,
+    };
+
+    // Save the new guest to AsyncStorage
+    await AsyncStorage.setItem('guests', JSON.stringify([...guests, newGuest]));
+
+    // Update the guest list state
+    setGuests((prevGuests) => [...prevGuests, newGuest]);
+
+    // Clear input fields
+    setNameEnter('');
+    setAgeEnter('');
   };
 
-  // Save name and age to AsyncStorage
-  const saveData = async () => {
+  const loadGuestData = async () => {
     try {
-      // Use Promise.all to wait for both setItem calls to finish
-      await Promise.all([
-        AsyncStorage.setItem('guestName', JSON.stringify(nameEnter)),
-        AsyncStorage.setItem('guestAge', JSON.stringify(ageEnter)),
-      ])
-        // Show a success alert, if both setItem calls succeed
-        .then(() => {
-          Alert.alert('Success', 'Data saved successfully');
-        })
-        // Show a fail alert, if either setItem call fails
-        .catch((error) => {
-          Alert.alert('Failure', `Data could not be saved: ${error.message}`);
-        });
+      // Load guest data from AsyncStorage
+      const storedGuests = await AsyncStorage.getItem('guests');
+      if (storedGuests) {
+        setGuests(JSON.parse(storedGuests));
+      }
     } catch (error) {
-      // Show a generic error alert, if something else goes wrong
-      Alert.alert('Error', 'Something went wrong!');
+      console.error('Error loading guest data:', error);
     }
   };
-  
 
   return (
-    
-    // SafeareaView made to encapsulate the entirity of the UI for the AddGuestScreen
     <SafeAreaView style={styles.container}>
+      <View style={styles.titleContainer}>
+        <Text style={styles.title}>Add guest here!</Text>
+      </View>
 
-        {/* ----------------------------- TITLE ----------------------------- */}
+      <View style={styles.inputContainer}>
+        <TextInput
+          style={styles.inputStyle}
+          placeholder="Please enter your name here."
+          value={nameEnter}
+          onChangeText={setNameEnter}
+        />
+        <TextInput
+          style={styles.inputStyle}
+          placeholder="Please enter your age here."
+          value={ageEnter}
+          onChangeText={setAgeEnter}
+          keyboardType="numeric"
+        />
+      </View>
 
-        {/* For page title */}
-        <View style={styles.titleContainer}>
-
-          <Text style={styles.title}>Add guest here!</Text>
-
-        </View>
-        
-        {/* ----------------------------- TEXT INPUT ----------------------------- */}
-        
-        {/* For Text input in page */}
-        <View style={styles.inputContainer}>
-
-          <TextInput
-            style={styles.inputStyle}
-            placeholder="Please enter your name here."
-            onChangeText={setNameEnter}
-          />
-          <TextInput
-            style={styles.inputStyle}
-            placeholder="Please enter your age here."
-            onChangeText={setAgeEnter}
-          />
-            
-        </View>
-
-        {/* ----------------------------- BUTTONS ----------------------------- */}
-        
-        {/* For Back and Done Button in page */}
-        <View style={styles.buttonContainer}>
-        
-          {/* Back Button */}
-          <TouchableOpacity
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity
           style={styles.button}
           onPress={() => navigation.navigate('HomeScreen')}
-          >
-            <Text style={styles.buttonText}>Back</Text>
-
-          </TouchableOpacity>
-      
-        {/* Done Button */}
-        <TouchableOpacity
-        style={styles.button}
-        onPress={storeGuestData}
         >
+          <Text style={styles.buttonText}>Back</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.button} onPress={storeGuestData}>
           <Text style={styles.buttonText}>Done</Text>
-      </TouchableOpacity>
-      
-        
+        </TouchableOpacity>
       </View>
-    
     </SafeAreaView>
   );
-}
+};
 
   const styles = StyleSheet.create({
     container: {
